@@ -8,7 +8,6 @@ import {
     SupportedSearchEngine
 } from '../core/search/searchEngines.js';
 import {
-    validateArticleUrl,
     validateGithubRepositoryUrl,
     validatePublicWebUrl
 } from '../core/validation/targetValidation.js';
@@ -33,10 +32,7 @@ function getToolName(envVarName: string, defaultName: string): string {
 export const setupTools = (server: McpServer, runtime: OpenWebSearchRuntime): void => {
     // Get configurable tool names from environment variables
     const searchToolName = getToolName('MCP_TOOL_SEARCH_NAME', 'search');
-    const fetchLinuxDoToolName = getToolName('MCP_TOOL_FETCH_LINUXDO_NAME', 'fetchLinuxDoArticle');
-    const fetchCsdnToolName = getToolName('MCP_TOOL_FETCH_CSDN_NAME', 'fetchCsdnArticle');
     const fetchGithubToolName = getToolName('MCP_TOOL_FETCH_GITHUB_NAME', 'fetchGithubReadme');
-    const fetchJuejinToolName = getToolName('MCP_TOOL_FETCH_JUEJIN_NAME', 'fetchJuejinArticle');
     const fetchWebToolName = getToolName('MCP_TOOL_FETCH_WEB_NAME', 'fetchWebContent');
 
     // 搜索工具
@@ -140,74 +136,6 @@ export const setupTools = (server: McpServer, runtime: OpenWebSearchRuntime): vo
         }
     );
 
-    // 获取 Linux.do 文章工具
-    server.tool(
-        fetchLinuxDoToolName,
-        "Fetch full article content from a linux.do post URL",
-        {
-            url: z.string().url().refine(
-                (url) => validateArticleUrl(url, 'linuxdo'),
-                "URL must be from linux.do and end with .json"
-            )
-        },
-        async ({url}) => {
-            try {
-                console.error(`Fetching Linux.do article: ${url}`);
-                const result = await runtime.services.fetchLinuxDoArticle.execute({ url });
-
-                return {
-                    content: [{
-                        type: 'text',
-                        text: result.content
-                    }]
-                };
-            } catch (error) {
-                console.error('Failed to fetch Linux.do article:', error);
-                return {
-                    content: [{
-                        type: 'text',
-                        text: `Failed to fetch article: ${error instanceof Error ? error.message : 'Unknown error'}`
-                    }],
-                    isError: true
-                };
-            }
-        }
-    );
-
-    // 获取 CSDN 文章工具
-    server.tool(
-        fetchCsdnToolName,
-        "Fetch full article content from a csdn post URL",
-        {
-            url: z.string().url().refine(
-                (url) => validateArticleUrl(url, 'csdn'),
-                "URL must be from blog.csdn.net contains /article/details/ path"
-            )
-        },
-        async ({url}) => {
-            try {
-                console.error(`Fetching CSDN article: ${url}`);
-                const result = await runtime.services.fetchCsdnArticle.execute({ url });
-
-                return {
-                    content: [{
-                        type: 'text',
-                        text: result.content
-                    }]
-                };
-            } catch (error) {
-                console.error('Failed to fetch CSDN article:', error);
-                return {
-                    content: [{
-                        type: 'text',
-                        text: `Failed to fetch article: ${error instanceof Error ? error.message : 'Unknown error'}`
-                    }],
-                    isError: true
-                };
-            }
-        }
-    );
-
     // 获取 GitHub README 工具
     server.tool(
         fetchGithubToolName,
@@ -289,38 +217,5 @@ export const setupTools = (server: McpServer, runtime: OpenWebSearchRuntime): vo
         }
     );
 
-    // 获取掘金文章工具
-    server.tool(
-        fetchJuejinToolName,
-        "Fetch full article content from a Juejin(掘金) post URL",
-        {
-            url: z.string().url().refine(
-                (url) => validateArticleUrl(url, 'juejin'),
-                "URL must be from juejin.cn and contain /post/ path"
-            )
-        },
-        async ({url}) => {
-            try {
-                console.error(`Fetching Juejin article: ${url}`);
-                const result = await runtime.services.fetchJuejinArticle.execute({ url });
-
-                return {
-                    content: [{
-                        type: 'text',
-                        text: result.content
-                    }]
-                };
-            } catch (error) {
-                console.error('Failed to fetch Juejin article:', error);
-                return {
-                    content: [{
-                        type: 'text',
-                        text: `Failed to fetch article: ${error instanceof Error ? error.message : 'Unknown error'}`
-                    }],
-                    isError: true
-                };
-            }
-        }
-    );
 };
 

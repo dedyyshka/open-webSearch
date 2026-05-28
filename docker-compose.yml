@@ -18,4 +18,6 @@ services:
       # PROXY_URL: "http://host.docker.internal:7890"  #  Using a proxy (optional)
       ENABLE_CORS: "true"
       CORS_ORIGIN: "*"  # Multiple values can be separated by commas and parsed accordingly | 可以多个值逗号分隔，自行解析
+      # Ограничить движки поиска до 4 базовых
+      ALLOWED_SEARCH_ENGINES: "bing,duckduckgo,brave,baidu"
     command: ["node", "build/index.js"]

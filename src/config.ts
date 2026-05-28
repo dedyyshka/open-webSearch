@@ -41,7 +41,7 @@ export const config: AppConfig = {
     // Parse comma-separated list of allowed search engines
     allowedSearchEngines: process.env.ALLOWED_SEARCH_ENGINES ?
         process.env.ALLOWED_SEARCH_ENGINES.split(',').map(e => e.trim()) :
-        [],
+        ['bing', 'duckduckgo', 'brave', 'baidu'],
     searchMode: (process.env.SEARCH_MODE as AppConfig['searchMode']) || 'auto',
     // Proxy configuration
     proxyUrl: process.env.PROXY_URL || 'http://127.0.0.1:7890',
